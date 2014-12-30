@@ -49,10 +49,10 @@ namespace ns3 {
 
       //Getters and Setters for protocol parameters
       void SetIsBeacon(bool isBeacon)    { m_isBeacon = isBeacon; }
-      void SetPosition(float x, float y) { m_xPosition = x; m_yPosition = y; }
+      void SetPosition(double x, double y) { m_xPosition = x; m_yPosition = y; }
 
-      float GetXPosition()               { return m_xPosition;}
-      float GetYPosition()               { return m_yPosition;}
+      double GetXPosition()               { return m_xPosition;}
+      double GetYPosition()               { return m_yPosition;}
       bool  IsBeacon()                   { return m_isBeacon;}
 
       void  PrintDistances(Ptr<OutputStreamWrapper> stream, Ptr<Node> node) const;

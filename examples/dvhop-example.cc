@@ -60,6 +60,7 @@ private:
   void CreateDevices ();
   void InstallInternetStack ();
   void InstallApplications ();
+  void CreateBeacons();
 };
 
 int main (int argc, char **argv)
@@ -110,6 +111,8 @@ DVHopExample::Run ()
   CreateDevices ();
   InstallInternetStack ();
 
+  CreateBeacons();
+
   std::cout << "Starting simulation for " << totalTime << " s ...\n";
 
   Simulator::Stop (Seconds (totalTime));
@@ -150,6 +153,29 @@ DVHopExample::CreateNodes ()
   mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
   mobility.Install (nodes);
 }
+
+void
+DVHopExample::CreateBeacons ()
+{
+  Ptr<Ipv4RoutingProtocol> proto = nodes.Get (0)->GetObject<Ipv4>()->GetRoutingProtocol ();
+  Ptr<dvhop::RoutingProtocol> dvhop = DynamicCast<dvhop::RoutingProtocol> (proto);
+  dvhop->SetIsBeacon (true);
+  dvhop->SetPosition (123.42, 4534.452);
+
+
+  proto = nodes.Get (4)->GetObject<Ipv4>()->GetRoutingProtocol ();
+  dvhop = DynamicCast<dvhop::RoutingProtocol> (proto);
+  dvhop->SetIsBeacon (true);
+  dvhop->SetPosition (6663.42, 566.646);
+
+
+  proto = nodes.Get (9)->GetObject<Ipv4>()->GetRoutingProtocol ();
+  dvhop = DynamicCast<dvhop::RoutingProtocol> (proto);
+  dvhop->SetIsBeacon (true);
+  dvhop->SetPosition (123.42, 9873.45);
+
+}
+
 
 void
 DVHopExample::CreateDevices ()

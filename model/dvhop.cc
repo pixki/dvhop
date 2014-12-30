@@ -51,7 +51,7 @@ namespace ns3 {
     RoutingProtocol::RoutingProtocol () :
       HelloInterval (Seconds (1)),         //Send HELLO each second
       m_htimer (Timer::CANCEL_ON_DESTROY), //Set timer for HELLO
-      m_isBeacon(true),
+      m_isBeacon(false),
       m_xPosition(12.56),
       m_yPosition(468.5),
       m_seqNo (0)
@@ -448,6 +448,7 @@ namespace ns3 {
             }
 
           /*If this node is a beacon, it should broadcast its position always*/
+          NS_LOG_DEBUG ("Node "<< iface.GetLocal () << " isBeacon? " << m_isBeacon);
           if (m_isBeacon){
               //Create a HELLO Packet for each known Beacon to this node
               FloodingHeader helloHeader(m_xPosition,                 //X Position
