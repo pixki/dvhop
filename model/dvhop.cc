@@ -51,6 +51,9 @@ namespace ns3 {
     RoutingProtocol::RoutingProtocol () :
       HelloInterval (Seconds (1)),         //Send HELLO each second
       m_htimer (Timer::CANCEL_ON_DESTROY), //Set timer for HELLO
+      m_isBeacon(true),
+      m_xPosition(12.56),
+      m_yPosition(468.5),
       m_seqNo (0)
     {
     }
@@ -415,27 +418,63 @@ namespace ns3 {
           Ptr<Socket> socket = j->first;
           Ipv4InterfaceAddress iface = j->second;
           /*TODO: Remove the hardcoded position*/
-          FloodingHeader helloHeader(12,                  //X Position
-                                     232,                 //Y Position
-                                     m_seqNo,             //Sequence Numbr
-                                     0,                   //Hop Count
-                                     iface.GetLocal ());  //Beacon Address
 
-          NS_LOG_DEBUG (iface.GetLocal ()<< " Sending Hello...");
-          Ptr<Packet> packet = Create<Packet>();
-          packet->AddHeader (helloHeader);
-          // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
-          Ipv4Address destination;
-          if (iface.GetMask () == Ipv4Mask::GetOnes ())
+          std::vector<Ipv4Address> knownBeacons = m_disTable.GetKnownBeacons ();
+          std::vector<Ipv4Address>::const_iterator addr;
+          for (addr = knownBeacons.begin (); addr != knownBeacons.end (); ++addr)
             {
-              destination = Ipv4Address ("255.255.255.255");
+              //Create a HELLO Packet for each known Beacon to this node
+              Position beaconPos = m_disTable.GetBeaconPosition (*addr);
+              FloodingHeader helloHeader(beaconPos.first,              //X Position
+                                         beaconPos.second,             //Y Position
+                                         m_seqNo++,                    //Sequence Numbr
+                                         m_disTable.GetHopsTo (*addr), //Hop Count
+                                         *addr);                       //Beacon Address
+              NS_LOG_DEBUG (iface.GetLocal ()<< " Sending Hello...");
+              Ptr<Packet> packet = Create<Packet>();
+              packet->AddHeader (helloHeader);
+              // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+              Ipv4Address destination;
+              if (iface.GetMask () == Ipv4Mask::GetOnes ())
+                {
+                  destination = Ipv4Address ("255.255.255.255");
+                }
+              else
+                {
+                  destination = iface.GetBroadcast ();
+                }
+              Time jitter = Time (MilliSeconds (m_URandom->GetInteger (0, 10)));
+              Simulator::Schedule (jitter, &RoutingProtocol::SendTo, this , socket, packet, destination);
             }
-          else
-            {
-              destination = iface.GetBroadcast ();
+
+          /*If this node is a beacon, it should broadcast its position always*/
+          if (m_isBeacon){
+              //Create a HELLO Packet for each known Beacon to this node
+              FloodingHeader helloHeader(m_xPosition,                 //X Position
+                                         m_yPosition,                 //Y Position
+                                         m_seqNo++,                   //Sequence Numbr
+                                         0,                           //Hop Count
+                                         iface.GetLocal ());          //Beacon Address
+              std::cout <<__FILE__<< __LINE__ << helloHeader << std::endl;
+
+              NS_LOG_DEBUG (iface.GetLocal ()<< " Sending Hello...");
+              Ptr<Packet> packet = Create<Packet>();
+              packet->AddHeader (helloHeader);
+              // Send to all-hosts broadcast if on /32 addr, subnet-directed otherwise
+              Ipv4Address destination;
+              if (iface.GetMask () == Ipv4Mask::GetOnes ())
+                {
+                  destination = Ipv4Address ("255.255.255.255");
+                }
+              else
+                {
+                  destination = iface.GetBroadcast ();
+                }
+              Time jitter = Time (MilliSeconds (m_URandom->GetInteger (0, 10)));
+              Simulator::Schedule (jitter, &RoutingProtocol::SendTo, this , socket, packet, destination);
+
+
             }
-          Time jitter = Time (MilliSeconds (m_URandom->GetInteger (0, 10)));
-          Simulator::Schedule (jitter, &RoutingProtocol::SendTo, this , socket, packet, destination);
         }
     }
 
@@ -489,11 +528,16 @@ namespace ns3 {
     }
 
     void
-    RoutingProtocol::UpdateHopsTo (Ipv4Address beacon, uint16_t hops, float x, float y)
+    RoutingProtocol::UpdateHopsTo (Ipv4Address beacon, uint16_t newHops, double x, double y)
     {
-      NS_LOG_DEBUG ("Size before update: " << m_disTable.GetSize ());
-      m_disTable.AddBeacon (beacon, hops, x, y);
-      NS_LOG_DEBUG ("Size after update:  " << m_disTable.GetSize ());
+      uint16_t oldHops = m_disTable.GetHopsTo (beacon);
+      if (m_ipv4->GetInterfaceForAddress (beacon) >= 0){
+          NS_LOG_DEBUG ("Local Address, not updating in table");
+          return;
+        }
+
+      if( oldHops > newHops || oldHops == 0) //Update only when a shortest path is found
+        m_disTable.AddBeacon (beacon, newHops, x, y);
     }
 
 

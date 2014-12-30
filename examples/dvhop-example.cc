@@ -7,6 +7,7 @@
 #include "ns3/mobility-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/wifi-module.h"
+#include "ns3/netanim-module.h"
 #include <iostream>
 #include <cmath>
 
@@ -112,19 +113,16 @@ DVHopExample::Run ()
   std::cout << "Starting simulation for " << totalTime << " s ...\n";
 
   Simulator::Stop (Seconds (totalTime));
+
+  AnimationInterface anim("animation.xml");
+
   Simulator::Run ();
   Simulator::Destroy ();
 }
 
 void
 DVHopExample::Report (std::ostream &)
-{/*
-  for(NodeContainer::Iterator i = nodes.Begin(); i != nodes.End (); ++i)
-    {
-      Ptr<Node> n = *i;
-      n->
-    }
-  */
+{
 }
 
 void

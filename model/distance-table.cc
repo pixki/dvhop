@@ -33,12 +33,12 @@ namespace ns3
           return ((BeaconInfo)it->second).GetPosition ();
         }
 
-      else return std::make_pair<float,float>(-1.0,-1.0);
+      else return std::make_pair<double,double>(-1.0,-1.0);
     }
 
 
     void
-    DistanceTable::AddBeacon (Ipv4Address beacon, uint16_t hops, float xPos, float yPos)
+    DistanceTable::AddBeacon (Ipv4Address beacon, uint16_t hops, double xPos, double yPos)
     {
       std::map<Ipv4Address, BeaconInfo>::iterator it = m_table.find (beacon);
       BeaconInfo info;
@@ -52,7 +52,7 @@ namespace ns3
       else
         {
           info.SetHops (hops);
-          info.SetPosition (std::make_pair<float,float>(xPos, yPos));
+          info.SetPosition (std::make_pair<double,double>(xPos, yPos));
           info.SetTime (Simulator::Now ());
           m_table.insert (std::make_pair<Ipv4Address, BeaconInfo>(beacon, info));
         }

@@ -13,7 +13,7 @@ namespace ns3
   {
 
 
-    typedef std::pair<float, float> Position;
+    typedef std::pair<double, double> Position;
 
     class BeaconInfo
     {
@@ -93,7 +93,7 @@ namespace ns3
        * @param xPos X coordinate
        * @param yPos Y coordinate
        */
-      void AddBeacon(Ipv4Address beacon, uint16_t hops, float xPos, float yPos);
+      void AddBeacon(Ipv4Address beacon, uint16_t hops, double xPos, double yPos);
     private:
       std::map<Ipv4Address, BeaconInfo>  m_table;
     };

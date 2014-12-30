@@ -15,9 +15,13 @@ namespace ns3
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            X Position                         |
+    |                            X Position (1)                     |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            Y Position                         |
+    |                            X Position (2)                     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            Y Position (1)                     |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            Y Position (2)                     |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |           Hops                |       Sequence number         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -30,7 +34,7 @@ namespace ns3
     public:
 
       FloodingHeader();
-      FloodingHeader(uint32_t xPos, uint32_t yPos, uint16_t seqNo, uint16_t hopCount, Ipv4Address beacon);
+      FloodingHeader(double xPos, double yPos, uint16_t seqNo, uint16_t hopCount, Ipv4Address beacon);
 
       //Serializing and deserializing
       //{
@@ -44,21 +48,21 @@ namespace ns3
 
       //Getters and setters
       void SetHopCount(uint16_t count)     { m_hopCount = count; }
-      void SetXPosition(float pos)         { m_xPos = pos;   }
-      void SetYPosition(float pos)         { m_yPos = pos;   }
+      void SetXPosition(double pos)         { m_xPos = pos;   }
+      void SetYPosition(double pos)         { m_yPos = pos;   }
       void SetSequenceNumber(uint16_t sn)  { m_seqNo = sn;   }
       void SetBeaconAddress(Ipv4Address a) { m_beaconId = a; }
 
-      float    GetXPosition()        {   return m_xPos;     }
-      float    GetYPosition()        {   return m_yPos;     }
+      double    GetXPosition()        {   return m_xPos;     }
+      double    GetYPosition()        {   return m_yPos;     }
       uint16_t GetHopCount()         {   return m_hopCount; }
       uint16_t GetSequenceNumber()   {   return m_seqNo;    }
       Ipv4Address GetBeaconAddress() {   return m_beaconId; }
 
 
     private:
-      float        m_xPos;
-      float        m_yPos;
+      double       m_xPos;
+      double       m_yPos;
       uint16_t     m_seqNo;
       uint16_t     m_hopCount;
       Ipv4Address  m_beaconId;

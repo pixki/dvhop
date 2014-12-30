@@ -75,15 +75,15 @@ namespace ns3 {
 
       //Table to store the hopCount to each beacon
       DistanceTable  m_disTable;
-      void UpdateHopsTo (Ipv4Address beacon, uint16_t hops, float x, float y);
+      void UpdateHopsTo (Ipv4Address beacon, uint16_t hops, double x, double y);
 
 
       //Boolean to identify if this node acts as a Beacon
       bool m_isBeacon;
 
       //This node's position info
-      float m_xPosition;
-      float m_yPosition;
+      double m_xPosition;
+      double m_yPosition;
 
       //IPv4 Protocol
       Ptr<Ipv4>   m_ipv4;
